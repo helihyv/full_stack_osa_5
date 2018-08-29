@@ -3,6 +3,7 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
+
 class App extends React.Component {
   constructor(props) {
     super(props)
@@ -10,7 +11,10 @@ class App extends React.Component {
       blogs: [],
       user: null,
       username: '',
-      password: ''
+      password: '',
+      title: '',
+      author: '',
+      url: ''
     }
   }
 
@@ -23,10 +27,11 @@ class App extends React.Component {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       this.setState({user})
+      blogService.setToken(user.token)
     }
   } 
 
-  handleLoginFieldChange = (event) => {
+  handleFieldChange = (event) => {
     this.setState({ [event.target.name]: event.target.value })
   }
 
@@ -38,10 +43,11 @@ class App extends React.Component {
         password: this.state.password
       })
 
+      blogService.setToken(user.token)
       window.localStorage.setItem('loggedBloglistUser', JSON.stringify(user))
       this.setState({username: '', password: '', user})
     } catch(exception) {
-        console.log(exception)
+    
          }
     }
 
@@ -54,6 +60,29 @@ class App extends React.Component {
       window.localStorage.removeItem('loggedBloglistUser')
       
     }
+
+    createBlog = async (event) => {
+      event.preventDefault()
+        
+        const newBlog =  await blogService.create({
+          title: this.state.title,
+          author: this.state.author,
+          url: this.state.url
+        })
+
+        const blogList = this.state.blogs.concat(newBlog)
+        
+        this.setState({
+          title:'',
+          author: '',
+          url: '',
+          blogs: blogList
+        })
+      
+     
+    }
+
+    
 
   render() {
 
@@ -68,7 +97,7 @@ class App extends React.Component {
                 name='username'
                 type='text'
                 value={this.state.username}
-                onChange={this.handleLoginFieldChange}
+                onChange={this.handleFieldChange}
               />
             </div>
             <div>
@@ -77,7 +106,7 @@ class App extends React.Component {
                 type="password"
                 name="password"
                 value={this.state.password}
-                onChange={this.handleLoginFieldChange}
+                onChange={this.handleFieldChange}
               />
             </div>
             <button type="submit" >login</button>
@@ -91,6 +120,38 @@ class App extends React.Component {
  
         <h2>blogs</h2>
         <p> {this.state.user.username} logged in <button type="button" onClick={this.logout} >logout</button></p>
+        <h3>create new</h3>
+        <form onSubmit={this.createBlog} >
+          <div>
+            title
+            <input
+              type="text"
+              name="title"
+              value={this.state.title}
+              onChange={this.handleFieldChange}
+            />
+          </div>
+          <div>
+            author
+            <input
+              type="text"
+              name="author"
+              value={this.state.author}
+              onChange={this.handleFieldChange}
+            />
+          </div>
+          <div>
+            url
+            <input
+              type="text"
+              name="url"
+              value={this.state.url}
+              onChange={this.handleFieldChange}
+            />
+          </div>
+          <button type="submit">create</button>
+        </form>
+
         {this.state.blogs.map(blog => 
           <Blog key={blog._id} blog={blog}/>
         )}
