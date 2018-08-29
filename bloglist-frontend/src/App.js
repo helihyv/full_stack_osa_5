@@ -2,6 +2,18 @@ import React from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import './App.css'
+
+const Notification = ({message, isError}) => {
+  if (message === null) {
+    return null
+  } 
+  return (
+    <div className={isError ? "error" : "notification"}>
+      {message}
+    </div>
+  )
+}
 
 
 class App extends React.Component {
@@ -14,7 +26,9 @@ class App extends React.Component {
       password: '',
       title: '',
       author: '',
-      url: ''
+      url: '',
+      notification: null,
+      notificationIsError: false
     }
   }
 
@@ -35,6 +49,15 @@ class App extends React.Component {
     this.setState({ [event.target.name]: event.target.value })
   }
 
+  timedClearNotification = () => {
+    setTimeout(() => {
+      this.setState({
+        notification: null,
+        notificationIsError: false
+      })
+    }, 5000)
+  }
+
   login = async (event) => {
     event.preventDefault()
     try {
@@ -45,25 +68,42 @@ class App extends React.Component {
 
       blogService.setToken(user.token)
       window.localStorage.setItem('loggedBloglistUser', JSON.stringify(user))
-      this.setState({username: '', password: '', user})
-    } catch(exception) {
-    
-         }
-    }
-
-    logout = async (event) => {
-      
       this.setState({
-        user: null
+        username: '',
+        password: '',
+        user,
+        notification: `user ${user.username} logged in`,
+        notificationIsError: false
+      })
+      this.timedClearNotification()
+    } catch(exception) {
+      this.setState({
+        notification: `wrong username or password`,
+        notificationIsError: true
+      }) 
+
+      this.timedClearNotification()
+    }
+  }
+
+    logout = (event) => {
+      
+      const username = this.state.user.username
+      this.setState({
+        user: null,
+        notification: `user ${username} logged out`,
+        notificationIsError: false
       })
 
       window.localStorage.removeItem('loggedBloglistUser')
       
+      this.timedClearNotification()
     }
 
     createBlog = async (event) => {
       event.preventDefault()
-        
+       
+      try{
         const newBlog =  await blogService.create({
           title: this.state.title,
           author: this.state.author,
@@ -76,8 +116,20 @@ class App extends React.Component {
           title:'',
           author: '',
           url: '',
-          blogs: blogList
+          blogs: blogList,
+          notification: `a new blog '${newBlog.title}' by ${newBlog.author} added`,
+          notificationIsError: false
         })
+        this.timedClearNotification() 
+        
+      } catch(exception) {
+          this.setState({
+            notification: `adding a new blog failed: ${exception}`,
+            notificationIsError: true
+          })
+          this.timedClearNotification()
+
+      }
       
      
     }
@@ -89,6 +141,7 @@ class App extends React.Component {
     if (this.state.user === null) {
       return (
         <div>
+        <Notification message={this.state.notification} isError={this.state.notificationIsError}/>
           <h2>Log in to application</h2>
           <form onSubmit={this.login}>
             <div>
@@ -119,6 +172,7 @@ class App extends React.Component {
       <div>
  
         <h2>blogs</h2>
+        <Notification message={this.state.notification} isError={this.state.notificationIsError}/>
         <p> {this.state.user.username} logged in <button type="button" onClick={this.logout} >logout</button></p>
         <h3>create new</h3>
         <form onSubmit={this.createBlog} >
