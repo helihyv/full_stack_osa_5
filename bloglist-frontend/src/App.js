@@ -15,6 +15,74 @@ const Notification = ({message, isError}) => {
   )
 }
 
+class Togglable extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      visible: false
+    }
+  }
+
+  toggleVisibility = () => {
+    this.setState({visible: !this.state.visible})
+  }
+
+  render() {
+    const hideWhenvisible = { display: this.state.visible ? 'none': '' }
+    const showWhenVisible = { display: this.state.visible ? '' : 'none' }
+
+    return (
+      <div>
+        <div style={hideWhenvisible}>
+          <button onClick= {this.toggleVisibility}>{this.props.buttonLabel}</button>
+        </div>
+        <div style={showWhenVisible}>
+          {this.props.children}
+          <button onClick={this.toggleVisibility}>cancel</button>
+        </div>
+      </div>
+    )
+  }
+}
+
+const BlogForm = ({onSubmit, handleChange, title, author, url}) => {
+  return (
+  <div> 
+    <h3>create new</h3>
+    <form onSubmit={onSubmit} >
+      <div>
+        title
+        <input
+          type="text"
+          name="title"
+          value={title}
+          onChange={handleChange}
+        />
+      </div>
+      <div>
+        author
+        <input
+          type="text"
+          name="author"
+          value={author}
+          onChange={handleChange}
+        />
+      </div>
+      <div>
+        url
+        <input
+          type="text"
+          name="url"
+          value={url}
+          onChange={handleChange}
+        />
+      </div>
+      <button type="submit">create</button>
+    </form>
+  </div> 
+
+  )
+}
 
 class App extends React.Component {
   constructor(props) {
@@ -174,37 +242,16 @@ class App extends React.Component {
         <h2>blogs</h2>
         <Notification message={this.state.notification} isError={this.state.notificationIsError}/>
         <p> {this.state.user.username} logged in <button type="button" onClick={this.logout} >logout</button></p>
-        <h3>create new</h3>
-        <form onSubmit={this.createBlog} >
-          <div>
-            title
-            <input
-              type="text"
-              name="title"
-              value={this.state.title}
-              onChange={this.handleFieldChange}
-            />
-          </div>
-          <div>
-            author
-            <input
-              type="text"
-              name="author"
-              value={this.state.author}
-              onChange={this.handleFieldChange}
-            />
-          </div>
-          <div>
-            url
-            <input
-              type="text"
-              name="url"
-              value={this.state.url}
-              onChange={this.handleFieldChange}
-            />
-          </div>
-          <button type="submit">create</button>
-        </form>
+
+        <Togglable buttonLabel='new blog' >
+          <BlogForm
+            onSubmit={this.createBlog}
+            handleChange={this.handleFieldChange}
+            title={this.state.title}
+            author={this.state.author}
+            url={this.state.url}
+          />
+        </Togglable>
 
         {this.state.blogs.map(blog => 
           <Blog key={blog._id} blog={blog}/>
