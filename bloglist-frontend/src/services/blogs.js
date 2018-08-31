@@ -38,4 +38,9 @@ const update = async (updatedBlog) => {
   
 }
 
-export default { getAll, create, setToken, update}
+const remove = async (id) => {
+  //Tästä puuttuu autentikointi
+  await axios.delete(baseUrl.concat('/').concat(id) )
+}
+
+export default { getAll, create, setToken, update, remove}

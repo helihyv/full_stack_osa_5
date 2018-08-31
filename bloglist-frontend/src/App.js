@@ -113,6 +113,18 @@ class BlogItem extends React.Component {
     }
   }
 
+  deleteBlog = async() => {
+    try {
+      await blogService.remove()
+
+      //Tästä puuttuu blogin poistaminen selaimen muistissa olevasta listasta!
+
+    } catch (exception) {
+      console.log(exception)
+    }
+
+  }
+
 
   render() {
     const blogStyle = {
@@ -137,7 +149,8 @@ class BlogItem extends React.Component {
         <div style={showWhenFullInfo}>
           <a href={this.state.blog.url} >{this.state.blog.url}</a><br/>
           {this.state.blog.likes} likes <button type="button" onClick={this.addLike}>like</button><br/>
-          added by {this.state.blog.user.name}
+          added by {this.state.blog.user.name}<br/>
+          <button type="button" onClick={this.deleteBlog} >delete</button>
         </div>  
       </div>
     )
