@@ -1,5 +1,4 @@
 import React from 'react'
-import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './App.css'
@@ -82,6 +81,53 @@ const BlogForm = ({onSubmit, handleChange, title, author, url}) => {
   </div> 
 
   )
+}
+
+class BlogItem extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state =
+    {
+      blog: props.blog,
+      showFullInfo: false
+    }
+  }
+
+  toggleFullInfo = () => {
+    this.setState({
+      showFullInfo: !this.state.showFullInfo
+    })
+  }
+
+  render() {
+    const blogStyle = {
+      paddingTop: 10,
+      paddingLeft: 2,
+      border: 'solid',
+      borderWidth: 1,
+      marginBottom: 5
+    }
+
+    const showWhenFullInfo= {
+      display: this.state.showFullInfo ? '' :'none',
+      paddingTop: 5,
+      paddingLeft: 15 
+    }
+
+    return (
+      <div style={blogStyle} >
+        <div onClick={this.toggleFullInfo}>
+         {this.state.blog.title}: {this.state.blog.author}
+        </div>
+        <div style={showWhenFullInfo}>
+          <a href={this.state.blog.url} >{this.state.blog.url}</a><br/>
+          {this.state.blog.likes} likes <button type="button" >like</button><br/>
+          added by {this.state.blog.user.name}
+        </div>  
+      </div>
+    )
+
+  }
 }
 
 class App extends React.Component {
@@ -253,8 +299,9 @@ class App extends React.Component {
           />
         </Togglable>
 
+        <br/>
         {this.state.blogs.map(blog => 
-          <Blog key={blog._id} blog={blog}/>
+          <BlogItem key={blog._id} blog={blog}/>
         )}
       </div>
     );
