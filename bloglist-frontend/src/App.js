@@ -316,8 +316,10 @@ class App extends React.Component {
           />
         </Togglable>
 
-        {this.state.blogs.map(blog => 
-          <BlogItem key={blog._id} blog={blog}/>
+        {this.state.blogs
+          .sort((blog_a,blog_b) => {return blog_b.likes - blog_a.likes})
+          .map(blog => 
+            <BlogItem key={blog._id} blog={blog}/>
         )}
       </div>
     );
