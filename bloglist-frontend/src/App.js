@@ -99,6 +99,21 @@ class BlogItem extends React.Component {
     })
   }
 
+  addLike = async () => {
+    const blog = this.state.blog
+    blog.likes += 1
+    
+    try {
+      await blogService.update(blog)
+      this.setState({
+        blog: blog
+      })
+    } catch (exception) {
+        console.log(exception)
+    }
+  }
+
+
   render() {
     const blogStyle = {
       paddingTop: 10,
@@ -121,7 +136,7 @@ class BlogItem extends React.Component {
         </div>
         <div style={showWhenFullInfo}>
           <a href={this.state.blog.url} >{this.state.blog.url}</a><br/>
-          {this.state.blog.likes} likes <button type="button" >like</button><br/>
+          {this.state.blog.likes} likes <button type="button" onClick={this.addLike}>like</button><br/>
           added by {this.state.blog.user.name}
         </div>  
       </div>
@@ -248,6 +263,8 @@ class App extends React.Component {
      
     }
 
+
+
     
 
   render() {
@@ -299,7 +316,6 @@ class App extends React.Component {
           />
         </Togglable>
 
-        <br/>
         {this.state.blogs.map(blog => 
           <BlogItem key={blog._id} blog={blog}/>
         )}

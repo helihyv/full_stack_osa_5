@@ -25,4 +25,17 @@ const create = async (newBlog) => {
   return response.data
   }
 
-export default { getAll, create, setToken}
+const update = async (updatedBlog) => {
+  const updateToSend = {
+    user: updatedBlog.user,
+    likes: updatedBlog.likes,
+    author: updatedBlog.author,
+    title: updatedBlog.title,
+    url: updatedBlog.url
+  }
+  
+  await axios.put(baseUrl.concat('/').concat(updatedBlog._id),updateToSend)
+  
+}
+
+export default { getAll, create, setToken, update}
