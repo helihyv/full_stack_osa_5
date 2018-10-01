@@ -89,7 +89,8 @@ class BlogItem extends React.Component {
     this.state =
     {
       blog: props.blog,
-      showFullInfo: false
+      showFullInfo: false,
+      deleteFunction: props.deleteFunction
     }
   }
 
@@ -113,18 +114,10 @@ class BlogItem extends React.Component {
     }
   }
 
-  deleteBlog = async() => {
-    try {
-      await blogService.remove()
-
-      //Tästä puuttuu blogin poistaminen selaimen muistissa olevasta listasta!
-
-    } catch (exception) {
-      console.log(exception)
-    }
-
+  handleDelete = () => {
+  
+    this.state.deleteFunction(this.state.blog)
   }
-
 
   render() {
     const blogStyle = {
@@ -141,6 +134,8 @@ class BlogItem extends React.Component {
       paddingLeft: 15 
     }
 
+    const userInfo= this.state.blog.user ? this.state.blog.user.name : ""
+
     return (
       <div style={blogStyle} >
         <div onClick={this.toggleFullInfo}>
@@ -149,8 +144,8 @@ class BlogItem extends React.Component {
         <div style={showWhenFullInfo}>
           <a href={this.state.blog.url} >{this.state.blog.url}</a><br/>
           {this.state.blog.likes} likes <button type="button" onClick={this.addLike}>like</button><br/>
-          added by {this.state.blog.user.name}<br/>
-          <button type="button" onClick={this.deleteBlog} >delete</button>
+          added by {userInfo}<br/>
+          <button type="button" onClick={this.handleDelete} >delete</button>
         </div>  
       </div>
     )
@@ -276,6 +271,33 @@ class App extends React.Component {
      
     }
 
+    deleteBlog = async(blog) => {
+      try {
+
+        if (window.confirm(`Delete '${blog.title}' by ${blog.author}?`)) {
+        
+          await blogService.remove(blog._id)
+  
+          console.log("Poisto palvelimelta onnistui")
+  
+          const blogs = this.state.blogs
+          blogs.splice(blogs.indexOf(blog),1)
+          this.setState( {
+            blogs: blogs,
+            notification: `the blog '${blog.title}' by ${blog.author} deleted`,
+            notificationIsError: false
+          })
+          this.timedClearNotification()
+        }
+  
+      } catch (exception) {
+        this.setState({
+          notification: `deleting the blog '${blog.title}' by ${blog.author} failed: ${exception}`,
+          notificationIsError: true
+        })
+        this.timedClearNotification()
+      }
+    }
 
 
     
@@ -332,7 +354,7 @@ class App extends React.Component {
         {this.state.blogs
           .sort((blog_a,blog_b) => {return blog_b.likes - blog_a.likes})
           .map(blog => 
-            <BlogItem key={blog._id} blog={blog}/>
+            <BlogItem key={blog._id} blog={blog} deleteFunction={this.deleteBlog}/>
         )}
       </div>
     );

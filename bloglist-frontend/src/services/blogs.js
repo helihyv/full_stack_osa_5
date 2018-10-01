@@ -15,7 +15,6 @@ const setToken = (newToken) => {
 
 const create = async (newBlog) => {
 
-
   const config = {
     headers: { 'Authorization': token }
   }
@@ -39,8 +38,12 @@ const update = async (updatedBlog) => {
 }
 
 const remove = async (id) => {
-  //Tästä puuttuu autentikointi
-  await axios.delete(baseUrl.concat('/').concat(id) )
+
+  const config = {
+    headers: { 'Authorization': token }
+  }
+
+  await axios.delete(baseUrl.concat('/').concat(id),config )
 }
 
 export default { getAll, create, setToken, update, remove}
