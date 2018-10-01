@@ -83,6 +83,17 @@ const BlogForm = ({onSubmit, handleChange, title, author, url}) => {
   )
 }
 
+const DeleteButton = ({onClick,blog,user}) => {
+
+  console.log(onClick)
+
+  if (blog.user && user && blog.user.username !== user.username) {
+    return null
+  } else {
+    return (<button type="button" onClick={onClick} >delete</button>)
+  }
+}
+
 class BlogItem extends React.Component {
   constructor(props) {
     super(props)
@@ -90,7 +101,8 @@ class BlogItem extends React.Component {
     {
       blog: props.blog,
       showFullInfo: false,
-      deleteFunction: props.deleteFunction
+      deleteFunction: props.deleteFunction,
+      currentUser: props.currentUser
     }
   }
 
@@ -115,6 +127,8 @@ class BlogItem extends React.Component {
   }
 
   handleDelete = () => {
+
+    console.log(this.state)
   
     this.state.deleteFunction(this.state.blog)
   }
@@ -134,8 +148,8 @@ class BlogItem extends React.Component {
       paddingLeft: 15 
     }
 
-    const userInfo= this.state.blog.user ? this.state.blog.user.name : ""
-
+        const userInfo= this.state.blog.user ? this.state.blog.user.name : ""
+        
     return (
       <div style={blogStyle} >
         <div onClick={this.toggleFullInfo}>
@@ -145,7 +159,8 @@ class BlogItem extends React.Component {
           <a href={this.state.blog.url} >{this.state.blog.url}</a><br/>
           {this.state.blog.likes} likes <button type="button" onClick={this.addLike}>like</button><br/>
           added by {userInfo}<br/>
-          <button type="button" onClick={this.handleDelete} >delete</button>
+          <DeleteButton onClick={this.handleDelete} blog={this.state.blog} user={this.state.currentUser}/>
+
         </div>  
       </div>
     )
@@ -299,7 +314,6 @@ class App extends React.Component {
       }
     }
 
-
     
 
   render() {
@@ -354,7 +368,7 @@ class App extends React.Component {
         {this.state.blogs
           .sort((blog_a,blog_b) => {return blog_b.likes - blog_a.likes})
           .map(blog => 
-            <BlogItem key={blog._id} blog={blog} deleteFunction={this.deleteBlog}/>
+            <BlogItem key={blog._id} blog={blog} deleteFunction={this.deleteBlog} currentUser={this.state.user}/>
         )}
       </div>
     );
