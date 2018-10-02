@@ -2,6 +2,7 @@ import React from 'react'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './App.css'
+import PropTypes from 'prop-types'
 
 const Notification = ({message, isError}) => {
   if (message === null) {
@@ -13,6 +14,13 @@ const Notification = ({message, isError}) => {
     </div>
   )
 }
+
+Notification.propTypes = {
+  message: PropTypes.string,
+  isError: PropTypes.bool.isRequired
+}
+
+
 
 class Togglable extends React.Component {
   constructor(props) {
@@ -83,15 +91,33 @@ const BlogForm = ({onSubmit, handleChange, title, author, url}) => {
   )
 }
 
-const DeleteButton = ({onClick,blog,user}) => {
+BlogForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  handleChange: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
+  author: PropTypes.string.isRequired,
+  url: PropTypes.string.isRequired
+}
 
-  console.log(onClick)
+const DeleteButton = ({onClick,blog,user}) => {
 
   if (blog.user && user && blog.user.username !== user.username) {
     return null
   } else {
     return (<button type="button" onClick={onClick} >delete</button>)
   }
+}
+
+DeleteButton.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  blog: PropTypes.shape({
+    user: PropTypes.shape({
+      username: PropTypes.string
+    })
+  }).isRequired,
+  user: PropTypes.shape({
+    username: PropTypes.string
+  }).isRequired
 }
 
 class BlogItem extends React.Component {
@@ -127,9 +153,7 @@ class BlogItem extends React.Component {
   }
 
   handleDelete = () => {
-
-    console.log(this.state)
-  
+ 
     this.state.deleteFunction(this.state.blog)
   }
 
@@ -166,6 +190,24 @@ class BlogItem extends React.Component {
     )
 
   }
+}
+
+BlogItem.propTypes = {
+  blog: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    author: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
+    likes: PropTypes.number.isRequired,
+    user: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      username: PropTypes.string.isRequired
+    })
+  }).isRequired,
+  deleteFunction:PropTypes.func.isRequired, 
+  currentUser: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired
+  }).isRequired
 }
 
 class App extends React.Component {
@@ -263,7 +305,7 @@ class App extends React.Component {
         })
 
         const blogList = this.state.blogs.concat(newBlog)
-        
+           
         this.setState({
           title:'',
           author: '',
