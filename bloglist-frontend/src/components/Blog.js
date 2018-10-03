@@ -26,6 +26,7 @@ const DeleteButton = ({onClick,blog,user}) => {
 class Blog extends React.Component {
     constructor(props) {
       super(props)
+
       this.state =
       {
         blog: props.blog,
@@ -79,10 +80,10 @@ class Blog extends React.Component {
           
       return (
         <div style={blogStyle} >
-          <div onClick={this.toggleFullInfo}>
+          <div onClick={this.toggleFullInfo} className="nameAndAuthor">
            {this.state.blog.title}: {this.state.blog.author}
           </div>
-          <div style={showWhenFullInfo}>
+          <div style={showWhenFullInfo} className="details">
             <a href={this.state.blog.url} >{this.state.blog.url}</a><br/>
             {this.state.blog.likes} likes <button type="button" onClick={this.addLike}>like</button><br/>
             added by {userInfo}<br/>
