@@ -8,6 +8,16 @@ class App extends React.Component {
       data: { id }
     })
   }
+
+  createAnecdote = (event) => {
+    event.preventDefault()
+    this.props.store.dispatch({
+      type: 'CREATE_ANECDOTE',
+      data: {text: event.target.newAnecdoteText.value}
+    })
+    event.target.newAnecdoteText.value = ''
+
+  }
   
 
   render() {
@@ -27,8 +37,8 @@ class App extends React.Component {
           </div>
         )}
         <h2>create new</h2>
-        <form>
-          <div><input /></div>
+        <form onSubmit={this.createAnecdote}>
+          <div><input name="newAnecdoteText"/></div>
           <button>create</button> 
         </form>
       </div>
