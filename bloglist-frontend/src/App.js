@@ -121,15 +121,18 @@ class App extends React.Component {
   componentDidMount() {
     blogService.getAll().then(blogs =>
       this.setState({ blogs })
-    )
+     )
 
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
+  
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
+
       this.setState({user})
       blogService.setToken(user.token)
+
     }
-  } 
+  }
 
   handleFieldChange = (event) => {
     this.setState({ [event.target.name]: event.target.value })
@@ -226,9 +229,7 @@ class App extends React.Component {
         if (window.confirm(`Delete '${blog.title}' by ${blog.author}?`)) {
         
           await blogService.remove(blog._id)
-  
-          console.log("Poisto palvelimelta onnistui")
-  
+   
           const blogs = this.state.blogs
           blogs.splice(blogs.indexOf(blog),1)
           this.setState( {
