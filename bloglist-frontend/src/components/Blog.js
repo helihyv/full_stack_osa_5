@@ -54,12 +54,16 @@ class Blog extends React.Component {
       } catch (exception) {
           console.log(exception)
       }
+
+      this.props.sortBlogsFunction()
+
     }
   
     handleDelete = () => {
    
       this.state.deleteFunction(this.state.blog)
     }
+
   
     render() {
       const blogStyle = {

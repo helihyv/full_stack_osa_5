@@ -123,6 +123,8 @@ class App extends React.Component {
       this.setState({ blogs })
      )
 
+    this.sortBlogs()
+
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
   
     if (loggedUserJSON) {
@@ -249,6 +251,16 @@ class App extends React.Component {
       }
     }
 
+
+    sortBlogs = () => {
+      const sortedBlogs = this.state.blogs
+        .sort((blog_a,blog_b) => {return blog_b.likes - blog_a.likes})
+
+      this.setState({
+        blogs: sortedBlogs
+      })
+    }
+
     
 
   render() {
@@ -301,9 +313,8 @@ class App extends React.Component {
         </Togglable>
 
         {this.state.blogs
-          .sort((blog_a,blog_b) => {return blog_b.likes - blog_a.likes})
           .map(blog => 
-            <Blog key={blog._id} blog={blog} deleteFunction={this.deleteBlog} currentUser={this.state.user}/>
+            <Blog key={blog._id} blog={blog} deleteFunction={this.deleteBlog} sortBlogsFunction={this.sortBlogs} currentUser={this.state.user}/>
         )}
       </div>
     );
