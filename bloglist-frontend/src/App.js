@@ -119,12 +119,12 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    blogService.getAll().then(blogs =>
+    const blogs = blogService.getAll().then((blogs) => {
+      blogs.sort((blog_a,blog_b) => blog_b.likes - blog_a.likes)
       this.setState({ blogs })
-     )
 
-    this.sortBlogs()
-
+    })
+  
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
   
     if (loggedUserJSON) {
@@ -134,6 +134,8 @@ class App extends React.Component {
       blogService.setToken(user.token)
 
     }
+
+
   }
 
   handleFieldChange = (event) => {
@@ -253,17 +255,20 @@ class App extends React.Component {
 
 
     sortBlogs = () => {
-      const sortedBlogs = this.state.blogs
-        .sort((blog_a,blog_b) => {return blog_b.likes - blog_a.likes})
+      console.log(this.state.blogs)
+      const blogs=this.state.blogs 
+      blogs.sort((blog_a,blog_b) => {return blog_b.likes - blog_a.likes})
 
       this.setState({
-        blogs: sortedBlogs
+        blogs
       })
     }
 
     
 
   render() {
+
+  
 
     if (this.state.user === null) {
       return (
